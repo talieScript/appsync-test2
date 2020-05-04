@@ -47,7 +47,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import gql from "graphql-tag";
 import { createSubmission } from "./graphql/mutations.js";
-import { listSubmissions } from "@graphql/queries.js";
+import { listSubmissions } from "./graphql/queries.js";
 
 export interface Submission {
   id: number;
@@ -117,6 +117,18 @@ export default Vue.extend({
             ...emptySubmission,
             __typename: "Submission"
           }
+        },
+        update(cache, { data: { createSubmission } }) {
+          console.log(createSubmission);
+          // read the data from the cache for this query
+          const query = cache.readQuery({ query: gql(listSubmissions) });
+          // add our person from the mutation to the end
+          query.listSubmissions.items.push(createSubmission);
+          // write the data back to the cache
+          cache.writeQuery({
+            query: gql(listSubmissions),
+            data: query
+          });
         }
       });
     }
