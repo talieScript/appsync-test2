@@ -1,0 +1,5 @@
+type Submission @model {
+  id: ID!
+  vesselName: String!
+  vesselImo: String
+}
