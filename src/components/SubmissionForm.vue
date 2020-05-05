@@ -137,13 +137,13 @@ export default Vue.extend({
     structuredSubmission(): Submission {
       return {
         id: this.id,
-        vesseName: this.vesselName,
+        vesselName: this.vesselName,
         vesselImo: this.vesselImo,
         dateOffset: {
           date: this.date,
           offset: this.offset
         },
-        fuels: this.fuels,
+        fuels: this.numberFuels,
         totalFuel: this.totalFuel
       };
     },

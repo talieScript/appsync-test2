@@ -46,7 +46,11 @@ import SubmssionForm from "./components/SubmissionForm.vue";
 import { v4 as uuidv4 } from "uuid";
 
 import gql from "graphql-tag";
-import { createSubmission, deleteSubmission } from "./graphql/mutations.js";
+import {
+  createSubmission,
+  deleteSubmission,
+  updateSubmission
+} from "./graphql/mutations.js";
 import { listSubmissions } from "./graphql/queries.js";
 import {
   onCreateSubmission,
@@ -105,7 +109,15 @@ export default Vue.extend({
      * submit function here
      */
     submit(submission) {
-      console.log(submission);
+      this.$apollo.mutate({
+        mutation: gql(updateSubmission),
+        variables: { input: { ...submission } },
+        __typename: "Mutation",
+        updateSubmission: {
+          ...submission,
+          __typename: "Submission"
+        }
+      });
     },
     addSubmission() {
       const emptySubmission = {
