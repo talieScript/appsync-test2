@@ -7,6 +7,16 @@ export const getSubmission = /* GraphQL */ `
       id
       vesselName
       vesselImo
+      dateOffset {
+        date
+        offset
+      }
+      fuels {
+        LGO
+        IFO
+        MGO
+      }
+      totalFuel
     }
   }
 `;
@@ -21,6 +31,16 @@ export const listSubmissions = /* GraphQL */ `
         id
         vesselName
         vesselImo
+        dateOffset {
+          date
+          offset
+        }
+        fuels {
+          LGO
+          IFO
+          MGO
+        }
+        totalFuel
       }
       nextToken
     }

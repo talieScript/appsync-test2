@@ -111,7 +111,17 @@ export default Vue.extend({
       const emptySubmission = {
         id: uuidv4(),
         vesselName: "vessel",
-        vesselImo: "1"
+        vesselImo: "1",
+        dateOffset: {
+          date: new Date().toISOString(),
+          offset: 0
+        },
+        fuels: {
+          LGO: 0,
+          IFO: 0,
+          MGO: 0
+        },
+        totalFuel: 0
       };
       this.$apollo.mutate({
         mutation: gql(createSubmission),

@@ -1,5 +1,19 @@
 type Submission @model {
   id: ID!
   vesselName: String!
-  vesselImo: String
+  vesselImo: String!
+  dateOffset: Dateoffset
+  fuels: Fuels
+  totalFuel: Int
 }
+
+type Dateoffset {
+  date: String
+  offset: Int
+}
+
+type Fuels {
+  LGO: Int
+  IFO: Int
+  MGO: Int
+},

@@ -122,10 +122,10 @@ export default Vue.extend({
   },
   computed: {
     totalFuelValid(): boolean {
-      const calculatedFuel = Object.values(this.fuels).reduce((a, b) => {
+      const calculatedFuel = Object.values(this.numberFuels).reduce((a, b) => {
         return a + Number(b);
       }, 0);
-      return calculatedFuel === this.totalFuel;
+      return calculatedFuel == Number(this.totalFuel);
     },
     offsets(): number[] {
       const offsets = [];
@@ -145,6 +145,13 @@ export default Vue.extend({
         },
         fuels: this.fuels,
         totalFuel: this.totalFuel
+      };
+    },
+    numberFuels() {
+      return {
+        LGO: Number(this.fuels.LGO),
+        IFO: Number(this.fuels.IFO),
+        MGO: Number(this.fuels.MGO)
       };
     }
   },

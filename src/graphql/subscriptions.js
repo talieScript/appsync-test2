@@ -7,6 +7,16 @@ export const onCreateSubmission = /* GraphQL */ `
       id
       vesselName
       vesselImo
+      dateOffset {
+        date
+        offset
+      }
+      fuels {
+        LGO
+        IFO
+        MGO
+      }
+      totalFuel
     }
   }
 `;
@@ -16,6 +26,16 @@ export const onUpdateSubmission = /* GraphQL */ `
       id
       vesselName
       vesselImo
+      dateOffset {
+        date
+        offset
+      }
+      fuels {
+        LGO
+        IFO
+        MGO
+      }
+      totalFuel
     }
   }
 `;
@@ -25,6 +45,16 @@ export const onDeleteSubmission = /* GraphQL */ `
       id
       vesselName
       vesselImo
+      dateOffset {
+        date
+        offset
+      }
+      fuels {
+        LGO
+        IFO
+        MGO
+      }
+      totalFuel
     }
   }
 `;
