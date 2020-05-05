@@ -24,6 +24,7 @@
       <SubmissionsList
         @changeSubmission="changeActiveSubmission"
         @addSubmission="addSubmission"
+        @deleteSubmission="deleteSubmission"
         :submissions="listSubmissions.items"
       />
     </v-navigation-drawer>
@@ -41,14 +42,16 @@
 <script lang="ts">
 import Vue from "vue";
 import SubmissionsList from "./components/SubmissionsList.vue";
-import fakeSubmssions from "./dummyData/submissions";
 import SubmssionForm from "./components/SubmissionForm.vue";
 import { v4 as uuidv4 } from "uuid";
 
 import gql from "graphql-tag";
-import { createSubmission } from "./graphql/mutations.js";
+import { createSubmission, deleteSubmission } from "./graphql/mutations.js";
 import { listSubmissions } from "./graphql/queries.js";
-import { onCreateSubmission } from "./graphql/subscriptions.js";
+import {
+  onCreateSubmission,
+  onDeleteSubmission
+} from "./graphql/subscriptions.js";
 
 export interface Submission {
   id: number;
@@ -77,21 +80,26 @@ export default Vue.extend({
   },
   data() {
     return {
-      menu: true,
-      submissions: [],
+      menu: false,
       activeSubmission: {},
       hydrated: false
     };
   },
   methods: {
-    setActiveSubmission(value) {
-      this.activeSubmission = value;
+    deleteSubmission(submission: Submission) {
+      this.$apollo.mutate({
+        mutation: gql(deleteSubmission),
+        variables: { input: { id: submission.id } },
+        optimisticResponse: {
+          __typename: "Mutation",
+          deleteSubmission: submission
+        }
+      });
     },
     changeActiveSubmission(id: string) {
       this.activeSubmission = this.listSubmissions.items.find(submission => {
         return submission.id == id;
       }) as Submission;
-      console.log(this.activeSubmission);
     },
     /**
      * submit function here
@@ -156,13 +164,24 @@ export default Vue.extend({
               }
             };
           }
+        },
+        {
+          document: gql(onDeleteSubmission),
+          updateQuery(prev, { subscriptionData: { data } }) {
+            return {
+              listSubmissions: {
+                ...prev.listSubmissions,
+                items: prev.listSubmissions.items.filter(
+                  person => person.id !== data.onDeleteSubmission.id
+                )
+              }
+            };
+          }
         }
       ]
     }
   },
   async mounted() {
-    this.submissions = fakeSubmssions;
-    this.activeSubmission = this.submissions[0];
     this.$apollo.provider.defaultClient.hydrated().then(() => {
       this.hydrated = true;
     });

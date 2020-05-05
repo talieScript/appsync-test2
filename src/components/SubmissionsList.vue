@@ -6,6 +6,16 @@
         <v-list-item-content @click="changeSubmssion(submission.id)">
           {{ submission.id }}
         </v-list-item-content>
+        <v-btn
+          @click="$emit('deleteSubmission', submission)"
+          color="error"
+          fab
+          x-small
+          icon
+          dark
+        >
+          <v-icon>mdi-delete</v-icon>
+        </v-btn>
       </v-list-item>
       <v-list-item class="d-flex justify-center">
         <v-btn @click="$emit('addSubmission')" color="success" fab small dark>
