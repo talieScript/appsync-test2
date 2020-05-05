@@ -1,8 +1,6 @@
 # Data sources test app
 
-For creating prototypes to test for [snapshot](https://github.com/StratumFive/snapshot-backend) data source solutions.
-
-This is to be used as a mock submission form and submissions list.
+An appsync test app for snapshop datasources backend.
 
 ### How to test
 Remove the `fakeSubmssions` & the dummy data folder. Replace this with the data source data that you are testing.
