@@ -35,7 +35,16 @@
         @submit="submit"
         :active="activeSubmission"
       />
+      <p v-else class="text-center text--secondary">
+        Select or create a submission.
+      </p>
     </v-content>
+    <v-snackbar :timeout="0" :value="showSnack">
+      {{ snackText }}
+      <v-btn color="info" text @click="showSnack = false">
+        Close
+      </v-btn>
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -54,7 +63,8 @@ import {
 import { listSubmissions } from "./graphql/queries.js";
 import {
   onCreateSubmission,
-  onDeleteSubmission
+  onDeleteSubmission,
+  onUpdateSubmission
 } from "./graphql/subscriptions.js";
 
 export interface Submission {
@@ -86,11 +96,15 @@ export default Vue.extend({
     return {
       menu: false,
       activeSubmission: {},
-      hydrated: false
+      hydrated: false,
+      blockSnack: false,
+      showSnack: false,
+      snackText: ""
     };
   },
   methods: {
     deleteSubmission(submission: Submission) {
+      this.blockSnack = true;
       this.$apollo.mutate({
         mutation: gql(deleteSubmission),
         variables: { input: { id: submission.id } },
@@ -109,6 +123,7 @@ export default Vue.extend({
      * submit function here
      */
     submit(submission) {
+      this.blockSnack = true;
       this.$apollo.mutate({
         mutation: gql(updateSubmission),
         variables: { input: { ...submission } },
@@ -161,6 +176,13 @@ export default Vue.extend({
           });
         }
       });
+      // set active submission to new submission instantly
+      this.activeSubmission = emptySubmission;
+    }
+  },
+  watch: {
+    blockSnack(val) {
+      console.log(val);
     }
   },
   apollo: {
@@ -188,8 +210,33 @@ export default Vue.extend({
           }
         },
         {
+          document: gql(onUpdateSubmission),
+          updateQuery(prev, { subscriptionData: { data } }) {
+            // check is active submission
+            if (data.onUpdateSubmission.id === this.activeSubmission.id) {
+              this.activeSubmission = data.onUpdateSubmission;
+              this.snackText = "Submission has been updated by another user.";
+              if (!this.blockSnack) {
+                console.log(this.blockSnack);
+                this.showSnack = true;
+              }
+              this.blockSnack = false;
+            }
+          }
+        },
+        {
           document: gql(onDeleteSubmission),
           updateQuery(prev, { subscriptionData: { data } }) {
+            // check deleted submission was active
+            if (data.onDeleteSubmission.id === this.activeSubmission.id) {
+              if (!this.blockSnack) {
+                this.snackText = "Submission deleted by another user";
+                this.showSnack = true;
+              }
+              console.log(this.blockSnack);
+              this.activeSubmission = {};
+              this.blockSnack = false;
+            }
             return {
               listSubmissions: {
                 ...prev.listSubmissions,

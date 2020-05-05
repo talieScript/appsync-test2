@@ -159,19 +159,20 @@ export default Vue.extend({
     active: {
       immediate: true,
       handler(submission): void {
-        this.id = submission.id;
-        this.vesselName = submission.vesselName;
-        this.vesselImo = submission.vesselImo;
-        this.date = submission.dateOffset.date.substr(0, 10);
-        this.offset = submission.dateOffset.offset;
-        this.fuels = submission.fuels;
-        this.totalFuel = submission.totalFuel;
+        if (submission.id) {
+          this.id = submission.id;
+          this.vesselName = submission.vesselName;
+          this.vesselImo = submission.vesselImo;
+          this.date = submission.dateOffset.date.substr(0, 10);
+          this.offset = submission.dateOffset.offset;
+          this.fuels = submission.fuels;
+          this.totalFuel = submission.totalFuel;
+        }
       }
     }
   },
   methods: {
     submit() {
-      console.log("here");
       this.$emit("submit", this.structuredSubmission);
     }
   }
