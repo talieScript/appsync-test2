@@ -180,11 +180,6 @@ export default Vue.extend({
       this.activeSubmission = emptySubmission;
     }
   },
-  watch: {
-    blockSnack(val) {
-      console.log(val);
-    }
-  },
   apollo: {
     listSubmissions: {
       query: gql(listSubmissions),
@@ -217,7 +212,6 @@ export default Vue.extend({
               this.activeSubmission = data.onUpdateSubmission;
               this.snackText = "Submission has been updated by another user.";
               if (!this.blockSnack) {
-                console.log(this.blockSnack);
                 this.showSnack = true;
               }
               this.blockSnack = false;
@@ -233,7 +227,6 @@ export default Vue.extend({
                 this.snackText = "Submission deleted by another user";
                 this.showSnack = true;
               }
-              console.log(this.blockSnack);
               this.activeSubmission = {};
               this.blockSnack = false;
             }
