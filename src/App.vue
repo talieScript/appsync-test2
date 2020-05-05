@@ -24,7 +24,7 @@
       <SubmissionsList
         @changeSubmission="changeActiveSubmission"
         @addSubmission="addSubmission"
-        :submissions="submissions"
+        :submissions="listSubmissions.items"
       />
     </v-navigation-drawer>
 
@@ -48,6 +48,7 @@ import { v4 as uuidv4 } from "uuid";
 import gql from "graphql-tag";
 import { createSubmission } from "./graphql/mutations.js";
 import { listSubmissions } from "./graphql/queries.js";
+import { onCreateSubmission } from "./graphql/subscriptions.js";
 
 export interface Submission {
   id: number;
@@ -87,9 +88,10 @@ export default Vue.extend({
       this.activeSubmission = value;
     },
     changeActiveSubmission(id: string) {
-      this.activeSubmission = this.submissions.find(submission => {
+      this.activeSubmission = this.listSubmissions.items.find(submission => {
         return submission.id == id;
       }) as Submission;
+      console.log(this.activeSubmission);
     },
     /**
      * submit function here
@@ -103,7 +105,6 @@ export default Vue.extend({
         vesselName: "vessel",
         vesselImo: "1"
       };
-      console.log(emptySubmission);
       this.$apollo.mutate({
         mutation: gql(createSubmission),
         variables: { input: emptySubmission },
@@ -119,10 +120,9 @@ export default Vue.extend({
           }
         },
         update(cache, { data: { createSubmission } }) {
-          console.log(createSubmission);
           // read the data from the cache for this query
           const query = cache.readQuery({ query: gql(listSubmissions) });
-          // add our person from the mutation to the end
+          // add our submission from the mutation to the end
           query.listSubmissions.items.push(createSubmission);
           // write the data back to the cache
           cache.writeQuery({
@@ -131,6 +131,33 @@ export default Vue.extend({
           });
         }
       });
+    }
+  },
+  apollo: {
+    listSubmissions: {
+      query: gql(listSubmissions),
+      subscribeToMore: [
+        {
+          document: gql(onCreateSubmission),
+          updateQuery(prev, { subscriptionData: { data } }) {
+            // this will stop a duplicate submission being added in the browser that made the change
+            const idInListAlready = prev.listSubmissions.items.some(
+              submission => submission.id === data.onCreateSubmission.id
+            );
+            if (idInListAlready) {
+              return prev;
+            }
+            return {
+              listSubmissions: {
+                ...prev.listSubmissions,
+                items: prev.listSubmissions.items.concat([
+                  data.onCreateSubmission
+                ])
+              }
+            };
+          }
+        }
+      ]
     }
   },
   async mounted() {
