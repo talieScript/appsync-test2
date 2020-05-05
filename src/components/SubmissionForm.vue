@@ -93,6 +93,7 @@
 </template>
 
 <script lang="ts">
+// @ts-nocheck
 import Vue, { PropOptions } from "vue";
 import { Submission } from "../App.vue";
 

@@ -49,6 +49,7 @@
 </template>
 
 <script lang="ts">
+// @ts-nocheck
 import Vue from "vue";
 import SubmissionsList from "./components/SubmissionsList.vue";
 import SubmssionForm from "./components/SubmissionForm.vue";
